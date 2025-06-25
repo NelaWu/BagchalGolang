@@ -2,14 +2,15 @@ package game
 
 import (
 	"errors"
+	"log"
 	"math"
 )
 
 var (
-	ErrInvalidMove     = errors.New("invalid move")
-	ErrGameNotFound    = errors.New("game not found")
-	ErrNotPlayersTurn  = errors.New("not player's turn")
-	ErrGameOver        = errors.New("game is already over")
+	ErrInvalidMove    = errors.New("invalid move")
+	ErrGameNotFound   = errors.New("game not found")
+	ErrNotPlayersTurn = errors.New("not player's turn")
+	ErrGameOver       = errors.New("game is already over")
 )
 
 type GameService struct {
@@ -86,23 +87,46 @@ func (s *GameService) MakeMove(gameID string, move Move) (*Game, error) {
 
 // IsValidMove 檢查移動是否合法
 func (s *GameService) IsValidMove(game *Game, move Move) bool {
+	log.Printf("IsValidMove")
 	// 檢查是否是玩家的回合
 	if game.State.CurrentTurn != move.PieceType {
-		return false
-	}
-
-	// 檢查起點是否有正確的棋子
-	if game.State.Board[move.From.Y][move.From.X] != move.PieceType {
+		log.Printf("檢查是否是玩家的回合")
 		return false
 	}
 
 	// 檢查目標位置是否為空
 	if game.State.Board[move.To.Y][move.To.X] != Empty {
+		log.Printf("檢查目標位置是否為空")
 		return false
 	}
 
 	// 如果是放置羊的階段
 	if move.PieceType == Goat && game.State.GoatsInHand > 0 {
+		log.Printf("如果是放置羊的階段")
+		return move.From.X == move.To.X && move.From.Y == move.To.Y
+	}
+
+	// 對於非放置階段的移動，檢查起點是否有正確的棋子
+	if game.State.Board[move.From.Y][move.From.X] != move.PieceType {
+		log.Printf("對於非放置階段的移動，檢查起點是否有正確的棋子")
+		return false
+	}
+
+	// 檢查起點是否有正確的棋子
+	if game.State.Board[move.From.Y][move.From.X] != move.PieceType {
+		log.Printf("檢查起點是否有正確的棋子")
+		return false
+	}
+
+	// 檢查目標位置是否為空
+	if game.State.Board[move.To.Y][move.To.X] != Empty {
+		log.Printf("檢查目標位置是否為空")
+		return false
+	}
+
+	// 如果是放置羊的階段
+	if move.PieceType == Goat && game.State.GoatsInHand > 0 {
+		log.Printf("如果是放置羊的階段")
 		return move.From.X == move.To.X && move.From.Y == move.To.Y
 	}
 
@@ -166,6 +190,7 @@ func (s *GameService) executeMove(game *Game, move Move) error {
 func (s *GameService) checkGameOver(game *Game) {
 	// 檢查虎是否獲勝（吃掉5隻羊）
 	if game.State.CapturedGoats >= 5 {
+		log.Printf("檢查虎是否獲勝（吃掉5隻羊）")
 		game.State.IsGameOver = true
 		game.State.Winner = Tiger
 		return
@@ -173,6 +198,7 @@ func (s *GameService) checkGameOver(game *Game) {
 
 	// 檢查羊是否獲勝（虎無法移動）
 	if s.isTigerTrapped(game) {
+		log.Printf("檢查羊是否獲勝（虎無法移動）")
 		game.State.IsGameOver = true
 		game.State.Winner = Goat
 		return
@@ -206,24 +232,31 @@ func (s *GameService) hasTigerMoves(game *Game, x, y int) bool {
 	for _, d := range directions {
 		newX, newY := x+d.dx, y+d.dy
 		// 檢查普通移動
-		if s.IsValidMove(game, Move{
-			From:      Position{X: x, Y: y},
-			To:        Position{X: newX, Y: newY},
-			PieceType: Tiger,
-		}) {
+		if game.State.Board[newY][newX] == Empty {
 			return true
 		}
 
 		// 檢查跳躍移動（吃子）
 		jumpX, jumpY := x+2*d.dx, y+2*d.dy
-		if s.IsValidMove(game, Move{
-			From:      Position{X: x, Y: y},
-			To:        Position{X: jumpX, Y: jumpY},
-			PieceType: Tiger,
-		}) {
+		if game.State.Board[jumpY][jumpX] == Empty {
 			return true
 		}
 	}
 
 	return false
-} 
+}
+
+// GetGame 根據ID獲取遊戲
+func (s *GameService) GetGame(id string) (*Game, error) {
+	return s.repository.GetByID(id)
+}
+
+// ListPlayerGames 獲取玩家的所有遊戲
+func (s *GameService) ListPlayerGames(playerID string) ([]*Game, error) {
+	return s.repository.List(playerID)
+}
+
+// DeleteGame 刪除遊戲
+func (s *GameService) DeleteGame(id string) error {
+	return s.repository.Delete(id)
+}

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,9 +31,9 @@ func (h *GameHandler) RegisterRoutes(router *gin.Engine) {
 
 // CreateGameRequest 創建遊戲請求
 type CreateGameRequest struct {
-	PlayerID  string `json:"playerId"`
-	IsAIGame  bool   `json:"isAIGame"`
-	AILevel   int    `json:"aiLevel"`
+	PlayerID string `json:"playerId"`
+	IsAIGame bool   `json:"isAIGame"`
+	AILevel  int    `json:"aiLevel"`
 }
 
 // createGame 創建新遊戲
@@ -74,8 +73,8 @@ func (h *GameHandler) getGame(c *gin.Context) {
 
 // MakeMoveRequest 移動請求
 type MakeMoveRequest struct {
-	From      game.Position `json:"from"`
-	To        game.Position `json:"to"`
+	From      game.Position  `json:"from"`
+	To        game.Position  `json:"to"`
 	PieceType game.PieceType `json:"pieceType"`
 }
 
@@ -134,4 +133,4 @@ func (h *GameHandler) deleteGame(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "遊戲已刪除"})
-} 
+}
