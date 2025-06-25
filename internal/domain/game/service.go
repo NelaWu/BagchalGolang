@@ -87,46 +87,38 @@ func (s *GameService) MakeMove(gameID string, move Move) (*Game, error) {
 
 // IsValidMove 檢查移動是否合法
 func (s *GameService) IsValidMove(game *Game, move Move) bool {
-	log.Printf("IsValidMove")
 	// 檢查是否是玩家的回合
 	if game.State.CurrentTurn != move.PieceType {
-		log.Printf("檢查是否是玩家的回合")
 		return false
 	}
 
 	// 檢查目標位置是否為空
 	if game.State.Board[move.To.Y][move.To.X] != Empty {
-		log.Printf("檢查目標位置是否為空")
 		return false
 	}
 
 	// 如果是放置羊的階段
 	if move.PieceType == Goat && game.State.GoatsInHand > 0 {
-		log.Printf("如果是放置羊的階段")
 		return move.From.X == move.To.X && move.From.Y == move.To.Y
 	}
 
 	// 對於非放置階段的移動，檢查起點是否有正確的棋子
 	if game.State.Board[move.From.Y][move.From.X] != move.PieceType {
-		log.Printf("對於非放置階段的移動，檢查起點是否有正確的棋子")
 		return false
 	}
 
 	// 檢查起點是否有正確的棋子
 	if game.State.Board[move.From.Y][move.From.X] != move.PieceType {
-		log.Printf("檢查起點是否有正確的棋子")
 		return false
 	}
 
 	// 檢查目標位置是否為空
 	if game.State.Board[move.To.Y][move.To.X] != Empty {
-		log.Printf("檢查目標位置是否為空")
 		return false
 	}
 
 	// 如果是放置羊的階段
 	if move.PieceType == Goat && game.State.GoatsInHand > 0 {
-		log.Printf("如果是放置羊的階段")
 		return move.From.X == move.To.X && move.From.Y == move.To.Y
 	}
 
@@ -182,6 +174,7 @@ func (s *GameService) executeMove(game *Game, move Move) error {
 	} else {
 		game.State.CurrentTurn = Tiger
 	}
+	log.Printf("executeMove2：%d", game.State.CurrentTurn)
 
 	return nil
 }
@@ -223,6 +216,7 @@ func (s *GameService) isTigerTrapped(game *Game) bool {
 // hasTigerMoves 檢查特定位置的虎是否有可行的移動
 func (s *GameService) hasTigerMoves(game *Game, x, y int) bool {
 	// 檢查所有可能的移動方向
+	log.Printf("檢查虎子在位置(%d,%d)的可能移動", x, y)
 	directions := []struct{ dx, dy int }{
 		{-1, -1}, {-1, 0}, {-1, 1},
 		{0, -1}, {0, 1},
@@ -232,17 +226,24 @@ func (s *GameService) hasTigerMoves(game *Game, x, y int) bool {
 	for _, d := range directions {
 		newX, newY := x+d.dx, y+d.dy
 		// 檢查普通移動
-		if game.State.Board[newY][newX] == Empty {
-			return true
+		if newX >= 0 && newX < BoardSize && newY >= 0 && newY < BoardSize {
+			log.Printf("檢查普通移動到(%d,%d)", newX, newY)
+			if game.State.Board[newY][newX] == Empty {
+				log.Printf("找到有效的普通移動")
+				return true
+			}
 		}
 
 		// 檢查跳躍移動（吃子）
 		jumpX, jumpY := x+2*d.dx, y+2*d.dy
-		if game.State.Board[jumpY][jumpX] == Empty {
-			return true
+		if jumpX >= 0 && jumpX < BoardSize && jumpY >= 0 && jumpY < BoardSize {
+			if game.State.Board[jumpY][jumpX] == Empty {
+				return true
+			}
 		}
 	}
 
+	log.Printf("該虎子沒有可用的移動")
 	return false
 }
 
