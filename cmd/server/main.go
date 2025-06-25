@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -72,10 +73,10 @@ func main() {
 
 	// 啟動服務器
 	port := os.Getenv("PORT")
-	if port == ""{
+	if port == "" {
 		port = "8080"
 	}
-	if err := router.Run(":"+port); err != nil {
+	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("啟動服務器失敗: %v", err)
 	}
-} 
+}
