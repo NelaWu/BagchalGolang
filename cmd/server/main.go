@@ -71,7 +71,11 @@ func main() {
 	gameHandler.RegisterRoutes(router)
 
 	// 啟動服務器
-	if err := router.Run(":8080"); err != nil {
+	port := os.Getenv("PORT")
+	if port == ""{
+		port = "8080"
+	}
+	if err := router.Run(":"+port); err != nil {
 		log.Fatalf("啟動服務器失敗: %v", err)
 	}
 } 
