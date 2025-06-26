@@ -61,6 +61,7 @@ func (r *MemoryGameRepository) Delete(id string) error {
 }
 
 func main() {
+	log.Println("創建路由")
 	// 創建路由
 	router := gin.Default()
 
@@ -74,6 +75,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	log.Println("初始化依賴")
 	// 初始化依賴
 	gameRepo := NewMemoryGameRepository()
 	aiEngine := ai.NewEngine(2) // 默認中等難度
