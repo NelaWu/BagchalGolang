@@ -1,9 +1,11 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nelawu/BagchalGolang/internal/ai"
@@ -61,6 +63,16 @@ func (r *MemoryGameRepository) Delete(id string) error {
 func main() {
 	// 創建路由
 	router := gin.Default()
+
+	// 配置 CORS
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // 允許的來源
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// 初始化依賴
 	gameRepo := NewMemoryGameRepository()
