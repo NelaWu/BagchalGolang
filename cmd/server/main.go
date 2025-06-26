@@ -85,10 +85,13 @@ func main() {
 
 	// 啟動服務器
 	port := os.Getenv("PORT")
+	log.Println("PORT from env:", port)
 	if port == "" {
-		port = "8080"
+		port = "10000"
 	}
-	if err := router.Run(":" + port); err != nil {
-		log.Fatalf("啟動服務器失敗: %v", err)
+
+	log.Printf("服務器正在啟動，監聽端口: %s", port)
+	if err := router.Run("0.0.0.0:" + port); err != nil {
+		log.Fatalf("服務器啟動失敗: %v", err)
 	}
 }
