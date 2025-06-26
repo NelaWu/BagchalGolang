@@ -88,7 +88,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	if err := router.Run("0.0.0.0:" + port); err != nil {
+	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("啟動服務器失敗: %v", err)
 	}
 }
