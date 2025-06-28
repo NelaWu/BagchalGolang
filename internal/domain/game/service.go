@@ -190,7 +190,7 @@ func (s *GameService) checkGameOver(game *Game) {
 	}
 
 	// 檢查羊是否獲勝（虎無法移動）
-	if s.isTigerTrapped(game) {
+	if s.isTigerTrapped(game) || game.State.GoatsInHand == 0 {
 		log.Printf("檢查羊是否獲勝（虎無法移動）")
 		game.State.IsGameOver = true
 		game.State.Winner = Goat

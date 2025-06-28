@@ -93,7 +93,7 @@ func main() {
 	}
 
 	log.Printf("服務器正在啟動，監聽端口: %s", port)
-	if err := router.Run("0.0.0.0:" + port); err != nil {
+	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("服務器啟動失敗: %v", err)
 	}
 }
