@@ -159,8 +159,9 @@ func (s *GameService) executeMove(game *Game, move Move) error {
 		game.State.Board[move.To.Y][move.To.X] = move.PieceType
 
 		// 處理吃子
-		if move.Capture != nil {
-			game.State.Board[move.Capture.Y][move.Capture.X] = Empty
+		isValid := (move.To.X+move.From.X)%2 == 0 && (move.To.Y+move.From.Y)%2 == 0
+		if isValid == true && game.State.Board[(move.To.Y+move.From.Y)/2][(move.To.X+move.From.X)/2] == Goat {
+			game.State.Board[(move.To.Y+move.From.Y)/2][(move.To.X+move.From.X)/2] = Empty
 			game.State.CapturedGoats++
 		}
 	}
