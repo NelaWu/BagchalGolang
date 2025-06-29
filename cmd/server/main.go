@@ -85,6 +85,14 @@ func main() {
 	// 註冊路由
 	gameHandler.RegisterRoutes(router)
 
+	// 添加健康檢查端點
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": "Bagchal server is running",
+		})
+	})
+
 	// 啟動服務器
 	port := os.Getenv("PORT")
 	log.Println("PORT from env:", port)
